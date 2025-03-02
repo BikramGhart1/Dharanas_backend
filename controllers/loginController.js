@@ -2,7 +2,7 @@ require('dotenv').config()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
-const queries = require('../database/queries');
+const queries = require('../database/loginQueries');
 const { validationResult } = require('express-validator');
 const saltRounds = 10;
 
