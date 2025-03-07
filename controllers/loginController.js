@@ -21,14 +21,21 @@ const getLoginData = async (req, res, next) => {
         //sql query to retreive the user from database by email
         const user = await queries.getUserByEmail(email);
 
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: "Either password or email is invalid" });
+            return res.status(400).json({ message: "Either password or email is incorrect" });
         }
         const token = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: "24h" });
         res.status(200).json({ token, message: "Login successful" });
     } catch (err) {
-        console.error("Error in logindata: ",err);
+        if (err.message === "User not found") {
+            res.status(404).json({ message: err.message });
+        }
+
+        console.error("Error in logindata: ", err);
         res.status(500).json({ message: "Server error" });
     }
 }
@@ -37,7 +44,7 @@ const signUpCreateUser = async (req, res, next) => {
     try {
         //error handling for form validation
         formErrHandling(req);
-     
+
         //get input fields datas from frontend and hash the password
         const { email, password, username } = req.body;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
