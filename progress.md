@@ -11,3 +11,5 @@
 if user exists say user already exists and direct to login?
 If user is new give them token
 2. create new routes and protect them
+3. When the user keeps choosing and uploading the profile picture they will be stored in the uploads directory
+  but only one image will be in database so delete the rest of images 
