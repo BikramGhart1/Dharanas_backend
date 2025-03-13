@@ -1,22 +1,44 @@
 const userQueries = require('../database/userQueries');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs')
 
-const storage = multer.diskStorage({
+const pfpStorage = multer.diskStorage({
    destination: function (req, file, cb) {
-      cb(null, path.join(__dirname, '..', '/uploads'));
+      const userId = req.params.uid;
+      console.log(userId);
+      if (!userId) {
+         return cb(new Error("userId is missing in the request body"), null);
+      }
+      const userDir = path.join(__dirname, '..', 'uploads', 'users', userId, 'pfp');
+
+
+      //if above directory doesnt exists then make it
+      try {
+         if (!fs.existsSync(userDir)) {
+            fs.mkdirSync(userDir, { recursive: true });
+            console.log("Dir created at: ", userDir);
+         }
+      } catch (err) {
+         console.error('Error creating the dir: ', err);
+         return cb(err, null);
+      }
+      cb(null, userDir);
    },
    filename: function (req, file, cb) {
       cb(null, Date.now() + '-' + file.originalname);
    }
 });
 
-const upload = multer({ storage })
+const uploadPfp = multer({ storage: pfpStorage })
+
 
 const getUserDetails = async (req, res, next) => {
-   console.log("Api invoked");
    try {
       const user = await userQueries.getUserByEmail(req.user.email);
+      const baseURL=`http://${req.headers.host}`
+      const relativePfpURL=user.profile_picture;
+      user.profile_picture=`${baseURL}${relativePfpURL}`
       res.status(200).json({ user });
 
    } catch (err) {
@@ -25,26 +47,58 @@ const getUserDetails = async (req, res, next) => {
    }
 }
 
+
 const updateProfilePic = async (req, res, next) => {
    console.log("Profile change");
+   const uid = req.params.uid;
+   console.log(uid);
+   const imageFile = req.file;
    try {
-      const { uid } = req.body;
-      const imageFile = req.file;
-      console.log(imageFile);
       if (!imageFile) {
-         res.status(400).json({ message: "No file uploaded" });
+         return res.status(400).json({ message: "No file uploaded" });
+
       }
       const baseURL = `http://${req.headers.host}`
-      console.log('Base url: ', baseURL);
-      const imageURL = `${baseURL}/uploads/${imageFile.filename}`
+      const imageURL = `/uploads/users/${uid}/pfp/${imageFile.filename}`
+      console.log('image url after getting from multer: ', imageURL);
 
+      const userDetails = await userQueries.getUserByEmail(req.user.email);
+      const oldPfp = userDetails.profile_picture;
+      // console.log('old pfp relative path', oldPfp);
+
+      //store in database
       const user = await userQueries.updateProfilePic(uid, imageURL)
-      console.log('user: ', user);
-      res.status(200).json({ data: user, message: "pdp updated successfully" });
+      console.log('old pfp once again after updating the db: ', oldPfp);
+
+      //if old images exist delete them
+      if (oldPfp) {
+         const oldPfpPath = path.join(__dirname, "..", oldPfp)
+         console.log('old pfp full path: ', oldPfpPath)
+         if (fs.existsSync(oldPfpPath)) {
+            console.log('deleting old picture: ',oldPfpPath);
+            fs.unlinkSync(oldPfpPath);
+         }
+      }
+
+      const newPfp = user.profile_picture;
+      const newPfpURL = `${baseURL}${newPfp}`
+      // const trialPfpURL = `${baseURL}/uploads/users/bc224376-429b-4c30-8f27-48c4f4e0d38f/pfp/fangyuan.png`
+      // const newPfpURL = path.join(__dirname, '..', trialPfpURL)
+      console.log('new pfp url ready to send: ', newPfpURL)
+      res.status(200).json({ pfp: newPfpURL, message: "pdp updated successfully" });
    } catch (err) {
       console.error("Error while updating pfp: ", err);
-      res.status(500).json({ message: "Server error" });
+
+      if (imageFile) {
+         const newPfpPath = path.join(__dirname, 'uploads', 'users', uid, 'pfp', imageFile.filename)
+
+         if (fs.existsSync(newPfpPath)) {
+            fs.unlinkSync(newPfpPath);
+         }
+
+      }
+      res.status(500).json({ message: "Updation Failed" });
    }
 }
 
-module.exports = { getUserDetails, updateProfilePic, upload };
+module.exports = { getUserDetails, updateProfilePic, uploadPfp };
