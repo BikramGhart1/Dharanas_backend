@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs')
 
+//multer configuration
 const pfpStorage = multer.diskStorage({
    destination: function (req, file, cb) {
       const userId = req.params.uid;
@@ -36,9 +37,12 @@ const uploadPfp = multer({ storage: pfpStorage })
 const getUserDetails = async (req, res, next) => {
    try {
       const user = await userQueries.getUserByEmail(req.user.email);
-      const baseURL=`http://${req.headers.host}`
-      const relativePfpURL=user.profile_picture;
-      user.profile_picture=`${baseURL}${relativePfpURL}`
+
+      //send profile picture by adding base url after fetching from database.
+      const baseURL = `http://${req.headers.host}`
+      const relativePfpURL = user.profile_picture;
+
+      user.profile_picture = `${baseURL}${relativePfpURL}`
       res.status(200).json({ user });
 
    } catch (err) {
@@ -51,13 +55,14 @@ const getUserDetails = async (req, res, next) => {
 const updateProfilePic = async (req, res, next) => {
    console.log("Profile change");
    const uid = req.params.uid;
-   console.log(uid);
    const imageFile = req.file;
+
    try {
       if (!imageFile) {
          return res.status(400).json({ message: "No file uploaded" });
 
       }
+
       const baseURL = `http://${req.headers.host}`
       const imageURL = `/uploads/users/${uid}/pfp/${imageFile.filename}`
       console.log('image url after getting from multer: ', imageURL);
@@ -75,15 +80,13 @@ const updateProfilePic = async (req, res, next) => {
          const oldPfpPath = path.join(__dirname, "..", oldPfp)
          console.log('old pfp full path: ', oldPfpPath)
          if (fs.existsSync(oldPfpPath)) {
-            console.log('deleting old picture: ',oldPfpPath);
+            console.log('deleting old picture: ', oldPfpPath);
             fs.unlinkSync(oldPfpPath);
          }
       }
 
       const newPfp = user.profile_picture;
       const newPfpURL = `${baseURL}${newPfp}`
-      // const trialPfpURL = `${baseURL}/uploads/users/bc224376-429b-4c30-8f27-48c4f4e0d38f/pfp/fangyuan.png`
-      // const newPfpURL = path.join(__dirname, '..', trialPfpURL)
       console.log('new pfp url ready to send: ', newPfpURL)
       res.status(200).json({ pfp: newPfpURL, message: "pdp updated successfully" });
    } catch (err) {
@@ -101,4 +104,20 @@ const updateProfilePic = async (req, res, next) => {
    }
 }
 
-module.exports = { getUserDetails, updateProfilePic, uploadPfp };
+const updateUserinfo = async (req, res, next) => {
+   try {
+      const uid = req.params.uid;
+      const { username, bio } = req.body;
+      const user = await userQueries.updateUserinfo(uid, username, bio);
+      if(!user){
+         return res.status(404).json({message:"User not found"});
+      }
+      console.log('user data after updation: ', user);
+      res.status(200).json({ data: user, message: "User updated successfully" });
+   } catch (err) {
+      console.error('error while updating the user details: ', err);
+      res.status(500).json({ message: "User updations failed" });
+   }
+}
+
+module.exports = { getUserDetails, updateProfilePic, updateUserinfo, uploadPfp };
