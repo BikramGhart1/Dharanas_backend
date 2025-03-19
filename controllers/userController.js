@@ -51,6 +51,23 @@ const getUserDetails = async (req, res, next) => {
    }
 }
 
+const getUserByUid=async(req,res,next)=>{
+   try{
+     const {uid}=req.params;
+
+     if(!uid){
+      return res.status(400).json({message:"No uid found"});
+     }
+
+     const result=await getUserByUid(uid);
+     console.log(result.data);
+
+     res.status(200).json({data:result.data,message:"Data Fetched successfully"});
+   }catch(err){
+       console.error("Error during frtching user using uid: ",err);
+       res.status(500).json({message:"Error occurred during fetching user by uid"});
+   }
+}
 
 const updateProfilePic = async (req, res, next) => {
    console.log("Profile change");
@@ -120,4 +137,29 @@ const updateUserinfo = async (req, res, next) => {
    }
 }
 
-module.exports = { getUserDetails, updateProfilePic, updateUserinfo, uploadPfp };
+const showFollowers=async(req,res,next)=>{
+   try{
+    const users=await userQueries.fetchfollowers();
+    res.status(200).json({data:users ,message:"followers fetched successfully"});
+   }catch(err){
+      console.error('Error during getting followers: ',err);
+      res.status(500).json({message:"followers fetching failed"});
+   }
+}
+
+const searchUsers=async(req,res,next)=>{
+   try{
+      console.log('search invoked')
+      const {query}=req.query;
+
+      if(!query || query.trim()===''){
+        return res.status(200).json({data:[],message:"No users found"})
+      }
+      const users=await userQueries.searchUsers(query);
+      res.status(200).json({data:users.length>0?users:[], message:users.length>0?"Users found":"No users found"})
+   }catch(err){
+      console.error('Error during seearching the users: ',err);
+      res.status(500).json({message:"Error occured during searching users"});
+   }
+}
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers,searchUsers,uploadPfp };

@@ -28,7 +28,7 @@ const getLoginData = async (req, res, next) => {
         if (!isPasswordValid) {
             return res.status(400).json({ message: "Either password or email is incorrect" });
         }
-        const token = jwt.sign({ email: user.email }, SECRET_KEY, { expiresIn: "24h" });
+        const token = jwt.sign({ email: user.email, uid: user.uid }, SECRET_KEY, { expiresIn: "24h" });
         res.status(200).json({ token, message: "Login successful" });
     } catch (err) {
         if (err.message === "User not found") {
