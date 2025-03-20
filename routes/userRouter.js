@@ -4,7 +4,7 @@ const { getUserDetails, updateProfilePic, uploadPfp, updateUserinfo, showFollowe
 
 
 router.get('/userDetails', getUserDetails);
-router.get('/getUserByUid',getUserByUid);
+router.get('/getUserByUid/:uid',getUserByUid);
 router.post('/changepfp/:uid', uploadPfp.single('pfp'), updateProfilePic);
 router.post('/editProfile/:uid',updateUserinfo);
 router.get('/showFollowers',showFollowers);

@@ -51,21 +51,22 @@ const getUserDetails = async (req, res, next) => {
    }
 }
 
-const getUserByUid=async(req,res,next)=>{
-   try{
-     const {uid}=req.params;
+const getUserByUid = async (req, res, next) => {
+   try {
+      const uid = req.params.uid;
 
-     if(!uid){
-      return res.status(400).json({message:"No uid found"});
-     }
+      console.log('get user by uid invoked ', uid);
+      if (!uid) {
+         return res.status(400).json({ message: "No uid found" });
+      }
 
-     const result=await getUserByUid(uid);
-     console.log(result.data);
+      const result = await userQueries.getUserByUidQuery(uid);
+      console.log(result);
 
-     res.status(200).json({data:result.data,message:"Data Fetched successfully"});
-   }catch(err){
-       console.error("Error during frtching user using uid: ",err);
-       res.status(500).json({message:"Error occurred during fetching user by uid"});
+      res.status(200).json({ data: result, message: "Data Fetched successfully" });
+   } catch (err) {
+      console.error("Error during frtching user using uid: ", err);
+      res.status(500).json({ message: "Error occurred during fetching user by uid" });
    }
 }
 
@@ -126,8 +127,8 @@ const updateUserinfo = async (req, res, next) => {
       const uid = req.params.uid;
       const { username, bio } = req.body;
       const user = await userQueries.updateUserinfo(uid, username, bio);
-      if(!user){
-         return res.status(404).json({message:"User not found"});
+      if (!user) {
+         return res.status(404).json({ message: "User not found" });
       }
       console.log('user data after updation: ', user);
       res.status(200).json({ data: user, message: "User updated successfully" });
@@ -137,29 +138,29 @@ const updateUserinfo = async (req, res, next) => {
    }
 }
 
-const showFollowers=async(req,res,next)=>{
-   try{
-    const users=await userQueries.fetchfollowers();
-    res.status(200).json({data:users ,message:"followers fetched successfully"});
-   }catch(err){
-      console.error('Error during getting followers: ',err);
-      res.status(500).json({message:"followers fetching failed"});
+const showFollowers = async (req, res, next) => {
+   try {
+      const users = await userQueries.fetchfollowers();
+      res.status(200).json({ data: users, message: "followers fetched successfully" });
+   } catch (err) {
+      console.error('Error during getting followers: ', err);
+      res.status(500).json({ message: "followers fetching failed" });
    }
 }
 
-const searchUsers=async(req,res,next)=>{
-   try{
+const searchUsers = async (req, res, next) => {
+   try {
       console.log('search invoked')
-      const {query}=req.query;
+      const { query } = req.query;
 
-      if(!query || query.trim()===''){
-        return res.status(200).json({data:[],message:"No users found"})
+      if (!query || query.trim() === '') {
+         return res.status(200).json({ data: [], message: "No users found" })
       }
-      const users=await userQueries.searchUsers(query);
-      res.status(200).json({data:users.length>0?users:[], message:users.length>0?"Users found":"No users found"})
-   }catch(err){
-      console.error('Error during seearching the users: ',err);
-      res.status(500).json({message:"Error occured during searching users"});
+      const users = await userQueries.searchUsers(query);
+      res.status(200).json({ data: users.length > 0 ? users : [], message: users.length > 0 ? "Users found" : "No users found" })
+   } catch (err) {
+      console.error('Error during seearching the users: ', err);
+      res.status(500).json({ message: "Error occured during searching users" });
    }
 }
-module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers,searchUsers,uploadPfp };
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, searchUsers, uploadPfp };
