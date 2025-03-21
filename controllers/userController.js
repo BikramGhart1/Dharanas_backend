@@ -45,10 +45,12 @@ const getUserDetails = async (req, res, next) => {
       const user = await userQueries.getUserByEmail(req.user.email);
 
       //send profile picture by adding base url after fetching from database.
-      const baseURL = `http://${req.headers.host}`
-      const relativePfpURL = user.profile_picture;
+      if (user.profile_picture !== null) {
+         const baseURL = `http://${req.headers.host}`
+         const relativePfpURL = user.profile_picture;
 
-      user.profile_picture = `${baseURL}${relativePfpURL}`
+         user.profile_picture = `${baseURL}${relativePfpURL}`
+      }
       res.status(200).json({ user });
 
    } catch (err) {
