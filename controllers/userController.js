@@ -34,6 +34,12 @@ const pfpStorage = multer.diskStorage({
 const uploadPfp = multer({ storage: pfpStorage })
 
 
+const addBaseURL = (req, profile_picture) => {
+   const baseURL = `http://${req.headers.host}`
+
+   return `${baseURL}${profile_picture}`
+}
+
 const getUserDetails = async (req, res, next) => {
    try {
       const user = await userQueries.getUserByEmail(req.user.email);
@@ -60,10 +66,15 @@ const getUserByUid = async (req, res, next) => {
          return res.status(400).json({ message: "No uid found" });
       }
 
-      const result = await userQueries.getUserByUidQuery(uid);
-      console.log(result);
+      const user = await userQueries.getUserByUidQuery(uid);
 
-      res.status(200).json({ data: result, message: "Data Fetched successfully" });
+      if (user.profile_picture === null) {
+         user.profile_picture = '/images/guest.png';
+      } else {
+         user.profile_picture = addBaseURL(req, user.profile_picture);
+      }
+
+      res.status(200).json({ data: user, message: "Data Fetched successfully" });
    } catch (err) {
       console.error("Error during frtching user using uid: ", err);
       res.status(500).json({ message: "Error occurred during fetching user by uid" });
@@ -157,6 +168,17 @@ const searchUsers = async (req, res, next) => {
          return res.status(200).json({ data: [], message: "No users found" })
       }
       const users = await userQueries.searchUsers(query);
+
+      users.map((user) => {
+         console.log(user);
+         if (user.profile_picture == null) {
+            user.profile_picture = '/images/guest.png';
+         } else {
+            user.profile_picture = addBaseURL(req, user.profile_picture);
+         }
+         return user;
+      })
+
       res.status(200).json({ data: users.length > 0 ? users : [], message: users.length > 0 ? "Users found" : "No users found" })
    } catch (err) {
       console.error('Error during seearching the users: ', err);
