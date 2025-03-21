@@ -2,7 +2,7 @@ const pool = require('./db')
 
 const getUserByEmail = async (email) => {
     try {
-        const result = await pool.query('SELECT email, password FROM users WHERE email=$1', [email]);
+        const result = await pool.query('SELECT email,uid, password FROM users WHERE email=$1', [email]);
         if (result.rows.length === 0) {
             throw new Error("User not found");
         }

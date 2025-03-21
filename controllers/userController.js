@@ -187,4 +187,26 @@ const searchUsers = async (req, res, next) => {
       res.status(500).json({ message: "Error occured during searching users" });
    }
 }
-module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, searchUsers, uploadPfp };
+
+const followUserController = async (req, res, next) => {
+   try {
+      console.log('follow user invoked');
+      const followee_id = req.body.uid;
+      const follower_id = req.user.uid;
+
+      console.log('follower id: ', follower_id);
+      console.log('followee id:', followee_id);
+
+      if (!followee_id || !follower_id) {
+         console.log("Either followee or follower's id not found!");
+         return res.status(404).json({ message: "Either followee or follower's id not found!" });
+      }
+      const result=await userQueries.followUser(follower_id,followee_id);
+      res.status(200).json({ data:result.data,message: "Successfully followed the user" });
+
+   } catch (err) {
+      console.error("Error while Following a user: ", err);
+      res.status(500).json({ message: "Error occurred while following a user" });
+   }
+}
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, searchUsers, followUserController, uploadPfp };

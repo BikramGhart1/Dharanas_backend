@@ -11,3 +11,7 @@
 4. Have users suggestions and make followers and following 
 5. Then we move to post managements
 6. Then comments
+
+* new mar 21
+1. im using post request to insert in follow table but im getting user denied
+check follower and followee id and make sure routes are matching plus in frontend see if axios post method is correct
