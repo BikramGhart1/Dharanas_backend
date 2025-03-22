@@ -67,4 +67,14 @@ try{
    throw err;
 }
 }
-module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, searchUsers, followUser }
+
+const unFollowUser=async(followerId,followeeId)=>{
+   try{
+      const result=await pool.query('DELETE FROM follows WHERE follower_id=$1 AND followee_id=$2',[followerId,followeeId]);
+      console.log('unfolloweing');
+      return result.rowCount;
+   }catch(err){
+      throw err;
+   }
+}
+module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, searchUsers, followUser, unFollowUser }
