@@ -38,9 +38,10 @@ const updateUserinfo = async (uid, username, bio) => {
    }
 }
 
-const fetchfollowers = async () => {
+const fetchfollowers = async (providedUID) => {
    try {
-      const results = await pool.query('SELECT username FROM users ORDER BY username ASC');
+      const results = await pool.query(
+         'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC',[providedUID]);
       console.log(results.rows)
       return results.rows;
    } catch (err) {
@@ -48,6 +49,16 @@ const fetchfollowers = async () => {
    }
 }
 
+const fetchFollowings=async(providedUID)=>{
+   try {
+      const results = await pool.query(
+         'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC',[providedUID]);
+      console.log('fetching following ',results.rows)
+      return results.rows;
+   } catch (err) {
+      throw err;
+   }
+}
 const searchUsers = async (searchTerm) => {
    try {
       const results = await pool.query('SELECT uid,username,profile_picture FROM users WHERE username ILIKE $1 LIMIT 20', [`${searchTerm}%`])
@@ -77,4 +88,5 @@ const unFollowUser=async(followerId,followeeId)=>{
       throw err;
    }
 }
-module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, searchUsers, followUser, unFollowUser }
+
+module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, fetchFollowings, searchUsers, followUser, unFollowUser }

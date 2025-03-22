@@ -29,3 +29,14 @@ check follower and followee id and make sure routes are matching plus in fronten
 
 * mar 22 (priority high)
 1. fetch the followers and following and send to frontend
+2. In above solution I made four routes in total:
+   1. follow a user
+   2. Unfollow a user
+   3. fetch followers
+   4. fetch followings
+1 and 2 are almost working fine in backend. I havent tested 2.
+3 and 4 are also working but there is one issue: 
+Its fetching followers and followings only for the account holder user not other users
+> For this i've made separate routes to handle when uid comes in and when doesn't
+
+3. Rest of the issues need to be handled in the frontend (Mainly state management)

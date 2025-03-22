@@ -153,11 +153,28 @@ const updateUserinfo = async (req, res, next) => {
 
 const showFollowers = async (req, res, next) => {
    try {
-      const users = await userQueries.fetchfollowers();
+      const uid=req.params.uid || req.user.uid;
+      console.log('user uid: ',uid);
+      const users = await userQueries.fetchfollowers(uid);
+      console.log('fetching followers: ',users);
       res.status(200).json({ data: users, message: "followers fetched successfully" });
    } catch (err) {
       console.error('Error during getting followers: ', err);
       res.status(500).json({ message: "followers fetching failed" });
+   }
+}
+
+const showFollowings=async(req,res,next)=>{
+   try{
+      const uid=req.params.uid || req.user.uid;
+      console.log('uid of user: ',uid);
+      const users = await userQueries.fetchFollowings(uid);
+      console.log('fetching followings: ',users);
+      res.status(200).json({ data: users, message: "followers fetched successfully" });
+   }catch(err){
+
+      console.error('Error during getting followings: ', err);
+      res.status(500).json({ message: "followings fetching failed" });
    }
 }
 
@@ -231,4 +248,4 @@ const unFollowUserController = async (req, res, next) => {
       res.status(500).json({ message: "Server Error" });
    }
 }
-module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, searchUsers, followUserController, unFollowUserController, uploadPfp };
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, showFollowings, searchUsers, followUserController, unFollowUserController, uploadPfp };
