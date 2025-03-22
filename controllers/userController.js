@@ -217,7 +217,7 @@ const unFollowUserController = async (req, res, next) => {
    try {
       console.log('unfollowing user');
 
-      const followee_id = req.body.uid;
+      const followee_id = req.params.uid;
       const follower_id = req.user.uid;
 
       const result = await userQueries.unFollowUser(follower_id, followee_id);
