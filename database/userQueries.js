@@ -42,7 +42,7 @@ const fetchfollowers = async (providedUID) => {
    try {
       const results = await pool.query(
          'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC',[providedUID]);
-      console.log(results.rows)
+      console.log('fetch followers in query: ',results.rows)
       return results.rows;
    } catch (err) {
       throw err;
@@ -53,7 +53,7 @@ const fetchFollowings=async(providedUID)=>{
    try {
       const results = await pool.query(
          'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC',[providedUID]);
-      console.log('fetching following ',results.rows)
+      console.log('fetching following in queries: ',results.rows)
       return results.rows;
    } catch (err) {
       throw err;

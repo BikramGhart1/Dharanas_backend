@@ -40,6 +40,17 @@ const addBaseURL = (req, profile_picture) => {
    return `${baseURL}${profile_picture}`
 }
 
+const addBaseURLInArray = (req, users) => {
+   return users.map((user) => {
+      if (user.profile_picture == null) {
+         user.profile_picture = '/images/guest.png';
+      } else {
+         user.profile_picture = addBaseURL(req, user.profile_picture);
+      }
+      return user;
+   })
+}
+
 const getUserDetails = async (req, res, next) => {
    try {
       const user = await userQueries.getUserByEmail(req.user.email);
@@ -58,6 +69,7 @@ const getUserDetails = async (req, res, next) => {
       res.status(500).json({ message: "server error" })
    }
 }
+
 
 const getUserByUid = async (req, res, next) => {
    try {
@@ -135,6 +147,7 @@ const updateProfilePic = async (req, res, next) => {
    }
 }
 
+
 const updateUserinfo = async (req, res, next) => {
    try {
       const uid = req.params.uid;
@@ -153,25 +166,40 @@ const updateUserinfo = async (req, res, next) => {
 
 const showFollowers = async (req, res, next) => {
    try {
-      const uid=req.params.uid || req.user.uid;
-      console.log('user uid: ',uid);
+      const uid = req.params.uid || req.user.uid;
+      console.log('user uid: ', uid);
       const users = await userQueries.fetchfollowers(uid);
-      console.log('fetching followers: ',users);
-      res.status(200).json({ data: users, message: "followers fetched successfully" });
+
+      if (users.length === 0) {
+         console.log('No followers found');
+         return res.status(200).json({ data: [], message: "Empty array" });
+      }
+
+      const pfpAddedUsers = addBaseURLInArray(req, users);
+
+      console.log('fetching followers controller: ', pfpAddedUsers);
+      res.status(200).json({ data: pfpAddedUsers, message: "followers fetched successfully" });
    } catch (err) {
       console.error('Error during getting followers: ', err);
       res.status(500).json({ message: "followers fetching failed" });
    }
 }
 
-const showFollowings=async(req,res,next)=>{
-   try{
-      const uid=req.params.uid || req.user.uid;
-      console.log('uid of user: ',uid);
+const showFollowings = async (req, res, next) => {
+   try {
+      const uid = req.params.uid || req.user.uid;
+      console.log('uid of user: ', uid);
       const users = await userQueries.fetchFollowings(uid);
-      console.log('fetching followings: ',users);
-      res.status(200).json({ data: users, message: "followers fetched successfully" });
-   }catch(err){
+
+      if (users.length === 0) {
+         console.log('empty array following');
+         return res.status(200).json({ data: [], message: "No followings found" });
+      }
+
+      const pfpAddedUsers = addBaseURLInArray(req, users);
+      console.log('fetching followings controller: ', pfpAddedUsers);
+      res.status(200).json({ data: pfpAddedUsers, message: "followers fetched successfully" });
+   } catch (err) {
 
       console.error('Error during getting followings: ', err);
       res.status(500).json({ message: "followings fetching failed" });
@@ -188,17 +216,10 @@ const searchUsers = async (req, res, next) => {
       }
       const users = await userQueries.searchUsers(query);
 
-      users.map((user) => {
-         console.log(user);
-         if (user.profile_picture == null) {
-            user.profile_picture = '/images/guest.png';
-         } else {
-            user.profile_picture = addBaseURL(req, user.profile_picture);
-         }
-         return user;
-      })
+      const pfpAddedUsers = addBaseURLInArray(req, users);
 
-      res.status(200).json({ data: users.length > 0 ? users : [], message: users.length > 0 ? "Users found" : "No users found" })
+
+      res.status(200).json({ data: pfpAddedUsers.length > 0 ? pfpAddedUsers : [], message: pfpAddedUsers.length > 0 ? "Users found" : "No users found" })
    } catch (err) {
       console.error('Error during seearching the users: ', err);
       res.status(500).json({ message: "Error occured during searching users" });
