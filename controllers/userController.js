@@ -168,7 +168,10 @@ const showFollowers = async (req, res, next) => {
    try {
       const uid = req.params.uid || req.user.uid;
       console.log('user uid: ', uid);
-      const users = await userQueries.fetchfollowers(uid);
+      const { page = 1, limit = 10 } = req.query;
+      const offset = (page - 1) * limit;
+      console.log('followers: limit, page, offset', limit, page, offset);
+      const users = await userQueries.fetchfollowers(uid, limit, offset);
 
       if (users.length === 0) {
          console.log('No followers found');
@@ -189,7 +192,11 @@ const showFollowings = async (req, res, next) => {
    try {
       const uid = req.params.uid || req.user.uid;
       console.log('uid of user: ', uid);
-      const users = await userQueries.fetchFollowings(uid);
+      const { page = 1, limit = 10 } = req.query;
+      const offset = (page - 1) * limit;
+      console.log('followings: limit, page, offset', limit, page, offset);
+
+      const users = await userQueries.fetchFollowings(uid, limit, offset);
 
       if (users.length === 0) {
          console.log('empty array following');

@@ -38,10 +38,10 @@ const updateUserinfo = async (uid, username, bio) => {
    }
 }
 
-const fetchfollowers = async (providedUID) => {
+const fetchfollowers = async (providedUID,limit,offset) => {
    try {
       const results = await pool.query(
-         'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC',[providedUID]);
+         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.follower_id) OVER() AS total_followers FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3',[providedUID,limit,offset]);
       console.log('fetch followers in query: ',results.rows)
       return results.rows;
    } catch (err) {
@@ -49,10 +49,10 @@ const fetchfollowers = async (providedUID) => {
    }
 }
 
-const fetchFollowings=async(providedUID)=>{
+const fetchFollowings=async(providedUID,limit,offset)=>{
    try {
       const results = await pool.query(
-         'SELECT u.username, u.profile_picture, u.bio, u.uid FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC',[providedUID]);
+         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.followee_id) OVER() AS total_followings FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3',[providedUID,limit,offset]);
       console.log('fetching following in queries: ',results.rows)
       return results.rows;
    } catch (err) {
