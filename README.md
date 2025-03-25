@@ -41,15 +41,12 @@ Base url for now is localhost
 ## Authentication
 After user logs in a token will be provided and this token needs to be passed on header of the request as authorization
 
->  {
-
->     headers: {
-
->                  Authorization: `Bearer ${token}`,
-
->                },  
-
-> }
+```  {
+     headers: {
+                  Authorization: `Bearer ${token}`,
+                },  
+}
+```
 
 ## Routes
 ### signup route
@@ -57,23 +54,25 @@ After user logs in a token will be provided and this token needs to be passed on
 Creates new user and stores in database
 
 Request body:
-> {
-
->    "username": "newuser",
-
->  "email": "newuser@example.com",
-
->  "password": "strongpassword",
-
->  "confirmPassword":"strongPassword"
-
-> }
-
-
+``` {
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "password": "strongpassword",
+    "confirmPassword":"strongPassword"
+ }
+```
+Response body:
+```{
+    "uid":uid,
+    "email":email, 
+    "username":"username"
+}
+```
 2. POST/login
 
 # Setup
 1. npm install
+
 2. npm run devStart
 
 # Make sure the server is running and ready to serve the client 
