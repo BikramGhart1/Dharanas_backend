@@ -41,7 +41,8 @@ Base url for now is localhost
 ## Authentication
 After user logs in a token will be provided and this token needs to be passed on header of the request as authorization
 
-```  {
+``` 
+ {
      headers: {
                   Authorization: `Bearer ${token}`,
                 },  
@@ -54,7 +55,8 @@ After user logs in a token will be provided and this token needs to be passed on
 Creates new user and stores in database
 
 Request body:
-``` {
+```
+ {
     "username": "newuser",
     "email": "newuser@example.com",
     "password": "strongpassword",
@@ -62,7 +64,8 @@ Request body:
  }
 ```
 Response body:
-```{
+```
+{
     "uid":uid,
     "email":email, 
     "username":"username"
