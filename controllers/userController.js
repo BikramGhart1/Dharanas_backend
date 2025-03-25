@@ -175,13 +175,13 @@ const showFollowers = async (req, res, next) => {
 
       if (users.length === 0) {
          console.log('No followers found');
-         return res.status(200).json({ data: [], message: "Empty array" });
+         return res.status(200).json({ data: [], total_followers: 0 });
       }
-
+      const total_followers = users[0].total_followers || 0;
       const pfpAddedUsers = addBaseURLInArray(req, users);
 
       console.log('fetching followers controller: ', pfpAddedUsers);
-      res.status(200).json({ data: pfpAddedUsers, message: "followers fetched successfully" });
+      res.status(200).json({ data: pfpAddedUsers, total_followers: total_followers });
    } catch (err) {
       console.error('Error during getting followers: ', err);
       res.status(500).json({ message: "followers fetching failed" });
@@ -200,12 +200,13 @@ const showFollowings = async (req, res, next) => {
 
       if (users.length === 0) {
          console.log('empty array following');
-         return res.status(200).json({ data: [], message: "No followings found" });
+         return res.status(200).json({ data: [], total_followings: 0 });
       }
 
+      const total_followings = users[0].total_followings || 0;
       const pfpAddedUsers = addBaseURLInArray(req, users);
       console.log('fetching followings controller: ', pfpAddedUsers);
-      res.status(200).json({ data: pfpAddedUsers, message: "followers fetched successfully" });
+      res.status(200).json({ data: pfpAddedUsers, total_followings: total_followings });
    } catch (err) {
 
       console.error('Error during getting followings: ', err);
