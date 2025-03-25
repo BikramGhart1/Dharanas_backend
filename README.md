@@ -35,15 +35,20 @@ There are public and private routes, signup routes are public but rest of the ro
 Base url for now is localhost
 
 > baseurl/signup
+
 > baseurl/user
 
 ## Authentication
 After user logs in a token will be provided and this token needs to be passed on header of the request as authorization
 
 >  {
+
 >     headers: {
+
 >                  Authorization: `Bearer ${token}`,
+
 >                },  
+
 > }
 
 ## Routes
@@ -53,10 +58,15 @@ Creates new user and stores in database
 
 Request body:
 > {
+
 >    "username": "newuser",
+
 >  "email": "newuser@example.com",
+
 >  "password": "strongpassword",
+
 >  "confirmPassword":"strongPassword"
+
 > }
 
 
