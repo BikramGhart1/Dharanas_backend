@@ -66,12 +66,33 @@ Request body:
 Response body:
 ```
 {
+    data:{
     "uid":uid,
     "email":email, 
     "username":"username"
+    },
+    "message": "Account created successfully"
 }
 ```
 2. POST/login
+checks the already existing user's email and hashed password and authenticates the user by 
+passing the token to client 
+
+Request body: 
+```
+{
+ email:'example@gmail.com', 
+ password:'strongpassword',
+}
+```
+
+Response body:
+```
+{
+ token,  
+ message: "Login successful"
+}
+```
 
 # Setup
 1. npm install
