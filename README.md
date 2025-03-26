@@ -51,7 +51,7 @@ After user logs in a token will be provided and this token needs to be passed on
 
 ## Routes
 ### signup route
-1. POST/signin
+### 1. POST/signin
 Creates new user and stores in database
 
 Request body:
@@ -74,11 +74,16 @@ Response body:
     "message": "Account created successfully"
 }
 ```
-2. POST/login
-checks the already existing user's email and hashed password and authenticates the user by 
-passing the token to client 
 
-Request body: 
+### 2. POST/login
+checks the already existing user's email and hashed password and authenticates the user by 
+passing the token to client. This token can be used as an authenticater to access the protected routes 
+
+#### Request:
+- **URL**: 'signup/login'
+- **METHOD**: POST
+- **Content-Type**: 'application/json'
+- **Request Body**:  
 ```
 {
  email:'example@gmail.com', 
@@ -86,7 +91,8 @@ Request body:
 }
 ```
 
-Response body:
+#### Response:
+- Success (200 OK):
 ```
 {
  token,  
