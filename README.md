@@ -32,7 +32,8 @@ and interact with database.
 There are public and private routes, signup routes are public but rest of the routes require authentication 
 
 ### Base URL
-Base url for now is localhost
+Base url (for development): localhost
+* will update after deployment
 
 > baseurl/signup
 
@@ -48,6 +49,15 @@ After user logs in a token will be provided and this token needs to be passed on
                 },  
 }
 ```
+## Overview
+| Method | Endpoint           | Description                  | Authentication |
+|--------|-------------------|------------------------------|----------------|
+| POST   | `/signup/signin`   | Register a new user         | No |
+| POST   | `/signup/login`    | Authenticate user & get token | No |
+| GET    | `/user/userDetails`| Fetch user details | Yes (Bearer Token) |
+
+
+(I will update error status code too)
 
 ## Routes
 ## signup routes
