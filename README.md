@@ -50,11 +50,15 @@ After user logs in a token will be provided and this token needs to be passed on
 ```
 
 ## Routes
-### signup route
+## signup routes
 ### 1. POST/signin
-Creates new user and stores in database
+Creates a new user and stores in database
 
-Request body:
+#### Request:
+- **URL**: 'signup/signin'
+- **Method**: 'POST'
+- **Content-Type**: 'application/json'
+- **Request Body**:  
 ```
  {
     "username": "newuser",
@@ -63,7 +67,9 @@ Request body:
     "confirmPassword":"strongPassword"
  }
 ```
-Response body:
+
+#### Response:
+- Success (200 OK):
 ```
 {
     data:{
@@ -81,7 +87,7 @@ passing the token to client. This token can be used as an authenticater to acces
 
 #### Request:
 - **URL**: 'signup/login'
-- **METHOD**: POST
+- **Method**: 'POST'
 - **Content-Type**: 'application/json'
 - **Request Body**:  
 ```
@@ -99,6 +105,45 @@ passing the token to client. This token can be used as an authenticater to acces
  message: "Login successful"
 }
 ```
+
+## User Routes
+URL: baseurl/user
+
+* All the child routes of user routes are protected routes 
+so from frontend side a token must be passed as authentication in request's header.
+
+## fetching user details
+### 1. GET/userDetails
+This route fetches user details (uid,username,bio,created_at,email and profile_picture) from the database
+using email
+
+#### Request:
+- **URL**: 'user/userDetails'
+- **Method**: 'GET'
+- **Content-Type**: 'application/json'
+- **Request Body**:  {}
+- **Authentication**:
+```
+{
+    headers: {
+                    Authorization: `Bearer ${token}`
+                }
+}
+```
+
+#### Response:
+- Success (200 OK):
+```
+{
+    uid:'',
+    username:'',
+    bio,created_at:'',
+    email:'',
+    profile_picture:''
+}
+```
+
+router.get('/getUserByUid/:uid',getUserByUid);
 
 # Setup
 1. npm install
