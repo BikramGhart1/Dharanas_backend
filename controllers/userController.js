@@ -240,7 +240,6 @@ const followUserController = async (req, res, next) => {
       const followee_id = req.body.uid;
       const follower_id = req.user.uid;
 
-      console.log('db user: ', process.env.DB_USER);
       console.log('follower id: ', follower_id);
       console.log('followee id:', followee_id);
 
@@ -277,4 +276,16 @@ const unFollowUserController = async (req, res, next) => {
       res.status(500).json({ message: "Server Error" });
    }
 }
-module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, showFollowings, searchUsers, followUserController, unFollowUserController, uploadPfp };
+const checkIfFollowing=async(req,res,next)=>{
+   try{
+      const following_uid=req.params.fuid;
+    const userId=req.user.uid;
+
+    const resultRowCount=await userQueries.isFollowing(following_uid,userId);
+    res.json({isFollowing:resultRowCount>0});
+   }catch(err){
+    console.error("Error during checking if we following the user: ",err);
+    res.status(500).json({message:"Internal server error"});
+   }
+}
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, showFollowings, searchUsers, followUserController, unFollowUserController, checkIfFollowing, uploadPfp };

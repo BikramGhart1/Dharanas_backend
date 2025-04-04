@@ -3,7 +3,7 @@ const pool = require('./db');
 const getUserByEmail = async (email) => {
    try {
       const results = await pool.query('SELECT uid,username,bio,created_at,email,profile_picture FROM users WHERE email=$1', [email]);
-      console.log('get user by email query: ',results.rows[0])
+      console.log('get user by email query: ', results.rows[0])
       return results.rows[0];
    } catch (err) {
       throw err;
@@ -38,22 +38,22 @@ const updateUserinfo = async (uid, username, bio) => {
    }
 }
 
-const fetchfollowers = async (providedUID,limit,offset) => {
+const fetchfollowers = async (providedUID, limit, offset) => {
    try {
       const results = await pool.query(
-         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.follower_id) OVER() AS total_followers FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3',[providedUID,limit,offset]);
-      console.log('fetch followers in query: ',results.rows)
+         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.follower_id) OVER() AS total_followers FROM users u JOIN follows f ON u.uid=f.follower_id WHERE f.followee_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3', [providedUID, limit, offset]);
+      console.log('fetch followers in query: ', results.rows)
       return results.rows;
    } catch (err) {
       throw err;
    }
 }
 
-const fetchFollowings=async(providedUID,limit,offset)=>{
+const fetchFollowings = async (providedUID, limit, offset) => {
    try {
       const results = await pool.query(
-         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.followee_id) OVER() AS total_followings FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3',[providedUID,limit,offset]);
-      console.log('fetching following in queries: ',results.rows)
+         'SELECT u.username, u.profile_picture, u.bio, u.uid, COUNT(f.followee_id) OVER() AS total_followings FROM users u JOIN follows f ON u.uid=f.followee_id WHERE f.follower_id=$1 ORDER BY f.created_at DESC LIMIT $2 OFFSET $3', [providedUID, limit, offset]);
+      console.log('fetching following in queries: ', results.rows)
       return results.rows;
    } catch (err) {
       throw err;
@@ -69,24 +69,32 @@ const searchUsers = async (searchTerm) => {
    }
 }
 
-const followUser=async(followerId,followeeId)=>{
-try{
-    const result=await pool.query('INSERT INTO follows(follower_id,followee_id) VALUES ($1,$2) RETURNING *',[followerId,followeeId]);
-    console.log('follow query results: ',result.rows[0]);
-    return result.rows[0];
-}catch(err){
-   throw err;
-}
-}
-
-const unFollowUser=async(followerId,followeeId)=>{
-   try{
-      const result=await pool.query('DELETE FROM follows WHERE follower_id=$1 AND followee_id=$2',[followerId,followeeId]);
-      console.log('unfolloweing');
-      return result.rowCount;
-   }catch(err){
+const followUser = async (followerId, followeeId) => {
+   try {
+      const result = await pool.query('INSERT INTO follows(follower_id,followee_id) VALUES ($1,$2) RETURNING *', [followerId, followeeId]);
+      console.log('follow query results: ', result.rows[0]);
+      return result.rows[0];
+   } catch (err) {
       throw err;
    }
 }
 
-module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, fetchFollowings, searchUsers, followUser, unFollowUser }
+const unFollowUser = async (followerId, followeeId) => {
+   try {
+      const result = await pool.query('DELETE FROM follows WHERE follower_id=$1 AND followee_id=$2', [followerId, followeeId]);
+      console.log('unfolloweing');
+      return result.rowCount;
+   } catch (err) {
+      throw err;
+   }
+}
+
+const isFollowing = async (following_uid, userId) => {
+   try {
+      const result = await pool.query('SELECT 1 FROM follows WHERE follower_id=$1 AND followee_id=$2', [userId, following_uid]);
+      return result.rowCount;
+   } catch (err) {
+      throw err;
+   }
+}
+module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, fetchFollowings, searchUsers, followUser, unFollowUser, isFollowing }

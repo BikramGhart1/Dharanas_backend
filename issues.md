@@ -40,3 +40,11 @@ Its fetching followers and followings only for the account holder user not other
 > For this i've made separate routes to handle when uid comes in and when doesn't
 
 3. Rest of the issues need to be handled in the frontend (Mainly state management)
+
+* april 4
+Been pretty busy due to first terminal exam of fifth sem being around
+
+I've cleared almost all the above issues regarding the follow and unfollow 
+
+now only one issue remains:
+1. Pagination using load more button and style the followee component lil bit
