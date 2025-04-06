@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getUserDetails, updateProfilePic, uploadPfp, updateUserinfo, showFollowers, searchUsers, getUserByUid, followUserController, unFollowUserController, showFollowings, checkIfFollowing } = require('../controllers/userController');
+const { getUserDetails, updateProfilePic, uploadPfp, updateUserinfo, showFollowers, searchUsers, getUserByUid, followUserController, unFollowUserController, showFollowings, checkIfFollowing, searchScopedUsers } = require('../controllers/userController');
 
 //fetching user details
 router.get('/userDetails', getUserDetails);
@@ -28,5 +28,9 @@ router.delete('/unfollow/:uid',unFollowUserController);
 
 //check if we are following the user or not?
 router.get('/isFollowing/:fuid',checkIfFollowing);
+
+//search followers and followings
+router.get('/search/:scope/:uid',searchScopedUsers)
+router.get('/search/:scope',searchScopedUsers)
 
 module.exports = router;

@@ -68,7 +68,42 @@ const searchUsers = async (searchTerm) => {
       throw err;
    }
 }
-
+const searchFollowers = async (userId,searchTerm) => {
+   const query=`
+                SELECT uid,username,profile_picture
+                FROM users u
+                JOIN follows f
+                ON u.uid=f.follower_id
+                WHERE f.followee_id=$1
+                AND u.username ILIKE $2
+                LIMIT 20
+   `;
+   try {
+      const result = await pool.query(query, [userId,`${searchTerm}%`]);
+      console.log('search followers:', result.rows);
+      return result.rows;
+   } catch (err) {
+      throw err;
+   }
+}
+const searchFollowings = async (userId,searchTerm) => {
+   const query=`
+        SELECT uid, username, profile_picture
+        FROM users u
+        JOIN follows f
+        ON u.uid=f.followee_id
+        WHERE f.follower_id=$1 
+        AND u.username ILIKE $2 
+        LIMIT 20
+   `
+   try {
+      const result = await pool.query(query, [userId,`${searchTerm}%`]);
+      console.log('search followers:', result.rows);
+      return result.rows;
+   } catch (err) {
+      throw err;
+   }
+}
 const followUser = async (followerId, followeeId) => {
    try {
       const result = await pool.query('INSERT INTO follows(follower_id,followee_id) VALUES ($1,$2) RETURNING *', [followerId, followeeId]);
@@ -97,4 +132,4 @@ const isFollowing = async (following_uid, userId) => {
       throw err;
    }
 }
-module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, fetchFollowings, searchUsers, followUser, unFollowUser, isFollowing }
+module.exports = { getUserByEmail, getUserByUidQuery, updateProfilePic, updateUserinfo, fetchfollowers, fetchFollowings, searchUsers, searchFollowers, searchFollowings, followUser, unFollowUser, isFollowing }

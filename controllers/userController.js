@@ -234,6 +234,32 @@ const searchUsers = async (req, res, next) => {
    }
 }
 
+const searchScopedUsers = async (req, res, next) => {
+   const { query } = req.query;
+   const uid = req.params.uid || req.user.uid;
+   const scope=req.params.scope;
+   if (!query || query.trim() === '') {
+      return res.status(200).json({ data: [], message: "no search query found" });
+   }
+
+   try {
+      let users = [];
+      if (scope === 'followers') {
+         users = await userQueries.searchFollowers(uid,query);
+      } else if (scope === 'followings') {
+         users = await userQueries.searchFollowings(uid,query);
+      } else {
+         return res.status(400).json({ data: [], message: 'invalid scope' });
+      }
+
+      const usersWithAddedPfpUrl = addBaseURLInArray(req, users)
+      res.status(200).json({data:usersWithAddedPfpUrl,message:usersWithAddedPfpUrl.length>0?"Users found":"No users found"});
+   } catch (err) {
+      console.error("Error while searching followers or followings: ",err);
+      res.status(500).json({message:'Server error'});
+   }
+}
+
 const followUserController = async (req, res, next) => {
    try {
       console.log('follow user invoked');
@@ -276,16 +302,16 @@ const unFollowUserController = async (req, res, next) => {
       res.status(500).json({ message: "Server Error" });
    }
 }
-const checkIfFollowing=async(req,res,next)=>{
-   try{
-      const following_uid=req.params.fuid;
-    const userId=req.user.uid;
+const checkIfFollowing = async (req, res, next) => {
+   try {
+      const following_uid = req.params.fuid;
+      const userId = req.user.uid;
 
-    const resultRowCount=await userQueries.isFollowing(following_uid,userId);
-    res.json({isFollowing:resultRowCount>0});
-   }catch(err){
-    console.error("Error during checking if we following the user: ",err);
-    res.status(500).json({message:"Internal server error"});
+      const resultRowCount = await userQueries.isFollowing(following_uid, userId);
+      res.json({ isFollowing: resultRowCount > 0 });
+   } catch (err) {
+      console.error("Error during checking if we following the user: ", err);
+      res.status(500).json({ message: "Internal server error" });
    }
 }
-module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, showFollowings, searchUsers, followUserController, unFollowUserController, checkIfFollowing, uploadPfp };
+module.exports = { getUserDetails, getUserByUid, updateProfilePic, updateUserinfo, showFollowers, showFollowings, searchUsers, followUserController, unFollowUserController, checkIfFollowing, searchScopedUsers, uploadPfp };
