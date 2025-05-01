@@ -7,7 +7,7 @@ const userRouter = require('./routes/userRouter');
 const { authenticateToken } = require('./middlewares/authMiddleware');
 
 app.use(cors({
-    origin: "https://34bb3386.dharanas.pages.dev",
+    origin: "https://dharanas.pages.dev/",
     credentials: true
 }));
 
