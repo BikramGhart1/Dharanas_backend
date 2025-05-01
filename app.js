@@ -6,7 +6,10 @@ const loginRouter = require('./routes/loginRouter');
 const userRouter = require('./routes/userRouter');
 const { authenticateToken } = require('./middlewares/authMiddleware');
 
-app.use(cors());
+app.use(cors({
+    origin: "https://34bb3386.dharanas.pages.dev",
+    credentials: true
+}));
 
 app.use('/uploads', express.static(path.join(__dirname,'uploads')));
 app.use('/demo', express.static('demo'));
